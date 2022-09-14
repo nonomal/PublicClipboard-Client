@@ -1,71 +1,38 @@
 package main
 
 import (
-	"PublicClipboard-Client/model"
-	"bytes"
-	"encoding/json"
+	"PublicClipboard-Client/util"
+	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/spf13/viper"
-	"io/ioutil"
 	"log"
-	"net/http"
+	"strconv"
 	"time"
 )
 
-var getUrl, updUrl string
-
-func GetContent() (content string) {
-	res, _ := http.Get(getUrl)
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-	var result model.Result
-	json.Unmarshal(body, &result)
-	return result.Clipboard.Msg
-}
-
-func UpdContent(content string) bool {
-	info := make(map[string]string)
-	info["content"] = content
-	bytesData, _ := json.Marshal(info)
-	reader := bytes.NewReader(bytesData)
-	http.Post(updUrl, "application/json;charset=UTF-8", reader)
-	return true
-}
-
-func init() {
-	viper.SetConfigName("conf")
-	viper.SetConfigType("yml")
-	viper.AddConfigPath("conf")
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Println("viper load fail ...")
-		return
-	}
-	getUrl = viper.GetString("url.getUrl")
-	updUrl = viper.GetString("url.updUrl")
-}
-
 func main() {
 	lastContent, _ := clipboard.ReadAll()
-	if viper.GetString("init") == "1" {
-		clipboard.WriteAll(GetContent())
+	if viper.GetString("sleepTime") == "1" {
+		clipboard.WriteAll(util.GetContent())
 	} else {
-		UpdContent(lastContent)
+		util.UpdContent(lastContent)
 	}
+	sleepTime, _ := strconv.Atoi(viper.GetString("sleepTime"))
+	fmt.Println("程序运行中...")
 	for {
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Millisecond * time.Duration(sleepTime))
+		log.Println("1111")
 		local, _ := clipboard.ReadAll()
-		remote := GetContent()
-
+		remote := util.GetContent()
 		if local != "" && remote != "" && local != remote {
 			if local == lastContent {
 				clipboard.WriteAll(remote)
 				lastContent = remote
-				log.Println("local 《====== remote 同步了远端剪切板")
+				log.Println("local <<<=== remote 同步了远端剪切板")
 			} else {
-				UpdContent(local)
+				util.UpdContent(local)
 				lastContent = local
-				log.Println("local ======》 remote 更新了远端剪切板")
+				log.Println("local ===>>> remote 更新了远端剪切板")
 			}
 		}
 	}
