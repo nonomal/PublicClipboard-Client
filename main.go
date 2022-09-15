@@ -13,23 +13,31 @@ import (
 func main() {
 	lastContent, _ := clipboard.ReadAll()
 	if viper.GetString("initMode") == "1" {
-		clipboard.WriteAll(util.GetContent())
+		err := clipboard.WriteAll(util.GetRemoteContent())
+		if err != nil {
+			log.Println("启动失败，本地剪切板写入失败,", err)
+			return
+		}
 	} else {
-		util.UpdContent(lastContent)
+		util.UpdRemoteContent(lastContent)
 	}
 	sleepTime, _ := strconv.Atoi(viper.GetString("sleepTime"))
 	fmt.Println("程序运行中...")
 	for {
 		time.Sleep(time.Millisecond * time.Duration(sleepTime))
 		local, _ := clipboard.ReadAll()
-		remote := util.GetContent()
+		remote := util.GetRemoteContent()
 		if local != "" && remote != "" && local != remote {
 			if local == lastContent {
-				clipboard.WriteAll(remote)
+				err := clipboard.WriteAll(remote)
+				if err != nil {
+					log.Println("本地剪切板写入失败,", err)
+					continue
+				}
 				lastContent = remote
 				log.Println("local <<<=== remote 同步了远端剪切板")
 			} else {
-				util.UpdContent(local)
+				util.UpdRemoteContent(local)
 				lastContent = local
 				log.Println("local ===>>> remote 更新了远端剪切板")
 			}

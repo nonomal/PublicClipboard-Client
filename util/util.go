@@ -12,7 +12,7 @@ import (
 
 var getUrl, updUrl string
 
-func GetContent() (content string) {
+func GetRemoteContent() (content string) {
 	res, _ := http.Get(getUrl)
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
@@ -21,7 +21,7 @@ func GetContent() (content string) {
 	return result.Clipboard.Msg
 }
 
-func UpdContent(content string) bool {
+func UpdRemoteContent(content string) bool {
 	info := make(map[string]string)
 	info["content"] = content
 	bytesData, _ := json.Marshal(info)
