@@ -2,4 +2,4 @@ sleepTime : 5000 #延迟时间为3000毫秒
 url:
   getUrl: http://124.223.7.129:9090/clipboard/get
   updUrl: http://124.223.7.129:9090/clipboard/upd
-initMod: 2 # 1 表示启动后更新本地剪切板为远程内容 2 表示启动后将本地剪切板更新到远程
+initMode: 2 # 1 表示启动后更新本地剪切板为远程内容 2 表示启动后将本地剪切板更新到远程
