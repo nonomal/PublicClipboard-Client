@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/spf13/viper"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 )
@@ -14,8 +14,13 @@ var getUrl, updUrl string
 
 func GetRemoteContent() (content string) {
 	res, _ := http.Get(getUrl)
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	var result model.Result
 	json.Unmarshal(body, &result)
 	return result.Clipboard.Msg
