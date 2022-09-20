@@ -14,12 +14,14 @@ func main() {
 	lastContent, _ := clipboard.ReadAll()
 	if viper.GetString("initMode") == "1" {
 		err := clipboard.WriteAll(util.GetRemoteContent())
+		log.Println("local <<<=== remote 同步了远端剪切板")
 		if err != nil {
 			log.Println("启动失败，本地剪切板写入失败,", err)
 			return
 		}
 	} else {
 		util.UpdRemoteContent(lastContent)
+		log.Println("local ===>>> remote 更新了远端剪切板")
 	}
 	sleepTime, _ := strconv.Atoi(viper.GetString("sleepTime"))
 	fmt.Println("程序运行中...")
