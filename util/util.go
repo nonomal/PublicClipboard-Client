@@ -11,10 +11,10 @@ import (
 	"net/http"
 )
 
-var getUrl, updUrl string
+var readUrl, writeUrl string
 
 func GetRemoteContent() (content string) {
-	res, err := http.Get(getUrl)
+	res, err := http.Get(readUrl)
 	if err != nil {
 		return ""
 	}
@@ -30,7 +30,7 @@ func UpdRemoteContent(content string) bool {
 	info["content"] = content
 	bytesData, _ := json.Marshal(info)
 	reader := bytes.NewReader(bytesData)
-	http.Post(updUrl, "application/json;charset=UTF-8", reader)
+	http.Post(writeUrl, "application/json;charset=UTF-8", reader)
 	return true
 }
 
@@ -43,9 +43,9 @@ func init() {
 		log.Println("viper load fail ...")
 		return
 	}
-	getUrl = viper.GetString("url.getUrl")
-	updUrl = viper.GetString("url.updUrl")
+	readUrl = viper.GetString("url.readUrl")
+	writeUrl = viper.GetString("url.writeUrl")
 	fmt.Println("配置文件读取成功!")
-	fmt.Println("getUrl:", getUrl)
-	fmt.Println("updUrl:", updUrl)
+	fmt.Println("readUrl:", readUrl)
+	fmt.Println("writeUrl:", writeUrl)
 }
